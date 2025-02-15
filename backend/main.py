@@ -1,5 +1,6 @@
 from config import app, db
 from auth import *
+from chat import *
 
 if __name__ == "__main__":
     with app.app_context():

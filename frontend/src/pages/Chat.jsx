@@ -12,6 +12,52 @@ export default function Chat(){
         navigate(to)
     }
 
+    const handleCreateRoom = async(e) => {
+        e.preventDefault()
+
+        if (localStorage.getItem('username') !== null){
+            const randomNum = Math.floor(Math.random() * 1000)
+            const room = `${localStorage.getItem('username')}#${randomNum}`
+            const username = currentUser
+
+            // Create room
+            const data = {
+                username,
+                room
+            }
+
+            // url options
+            const url = 'http://127.0.0.1:5000/chat/create_room'
+            const options = {
+                // mode: 'no-cors',
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem('access')}`
+                },
+                body: JSON.stringify(data)
+            }
+
+            const response = await fetch(url, options)
+            if (response.status !== 201 && response.status !== 200){
+                const error = await response.json()
+                console.log(error.msg)
+            }else{ 
+                console.log(await response.json().msg)
+            }
+        }else{
+            console.log('Room creation failed')
+        }
+
+    }
+
+    const handleSearch = async (e) => {
+        const search = e.target.value
+        // setSearch(e.target.value)
+
+        console.log(`Searching for: ${search}`)
+    }
+
     const handleLogOut = () => {
         localStorage.removeItem('username')
         localStorage.removeItem('access')
@@ -36,6 +82,12 @@ export default function Chat(){
                             <button onClick={() => handleRedirect('/signin')}>Sign In</button>
                             <button onClick={() => handleRedirect('/signup')}>Sign Up</button>
                         </div>}
+                    </div>
+                    <div className='create-room-btn'>
+                        <button onClick={handleCreateRoom}>Create Room</button>
+                    </div>
+                    <div className='search-bar'>
+                        <input type='text' placeholder='Search' id='search' onChange={(e) => handleSearch(e)}></input>
                     </div>
                 </div>
             </div>

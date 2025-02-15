@@ -17,6 +17,7 @@ class UserModel(db.Model, MyModels):
     username = db.Column(db.String, nullable=False, unique=True, index=True)
     email = db.Column(db.String, nullable=False, unique=True, index=True)
     password = db.Column(db.String, nullable=False, unique=False)
+    chat = db.relationship('UserChatModel', backref='user')
 
 
     def set_password(self, password):
@@ -36,3 +37,35 @@ class UserModel(db.Model, MyModels):
             "email": self.email,
             "password": self.password,
         }
+    
+class UserChatModel(db.Model, MyModels):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_model.id'))
+    chat_id = db.Column(db.Integer, db.ForeignKey('chat_model.id'))
+
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'chat_id', name='unique_user_chat'),
+    )
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "chat_id": self.chat_id,
+        }
+    
+class ChatModel(db.Model, MyModels):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False, unique=True, index=True)
+    users = db.relationship('UserChatModel', backref='chat')
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "users": [user.to_json() for user in self.users]
+        }
+    
+    @classmethod
+    def get_room_by_name(cls, name):
+        return cls.query.filter_by(name=name).first()

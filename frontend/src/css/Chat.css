@@ -15,6 +15,7 @@
 .chats-list-header{
     width: 100%;
     /* height: 200px; */
+    /* background-color: greenyellow; */
     border-bottom: 2px solid #ddd;
 }
 
@@ -40,6 +41,20 @@
 .account-img{
     width: 60px;
     height: 60px;
+}
+
+.create-room-btn button{
+    width: 100%;
+    margin-top: 10px;
+}
+
+.search-bar input{
+    width: 96%;
+    margin-top: 10px;
+    /* height: 30px; */
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    padding: 5px;  
 }
 
 .chat-window{
