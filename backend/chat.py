@@ -23,3 +23,17 @@ def create_room():
     user_chat.save()
 
     return jsonify({"msg": "Room created!"}), 201
+
+
+@app.route('/chat/get_rooms', methods=['GET'])
+@jwt_required()
+def get_rooms():
+    username = request.args.get('user')
+    user = UserModel.get_user_by_username(username)
+
+    rooms = UserChatModel.query.filter_by(user_id=user.id).all()
+    rooms_name = []
+    for room in rooms:
+        rooms_name.append(room.chat.name)
+
+    return jsonify({"rooms": rooms_name}), 200

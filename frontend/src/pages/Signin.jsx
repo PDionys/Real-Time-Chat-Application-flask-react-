@@ -33,7 +33,7 @@ export default function Signin(){
             const token = await response.json()
             localStorage.setItem('username', username)
             localStorage.setItem('access', token.tokens.access)
-            localStorage.setItem('refresh', token.tokens.access)
+            localStorage.setItem('refresh', token.tokens.refresh)
             navigate('/')
         }
     }

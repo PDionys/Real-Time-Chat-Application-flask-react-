@@ -57,12 +57,14 @@ class UserChatModel(db.Model, MyModels):
 class ChatModel(db.Model, MyModels):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False, unique=True, index=True)
+    # type = db.Column(db.String, nullable=False, unique=False)
     users = db.relationship('UserChatModel', backref='chat')
 
     def to_json(self):
         return {
             "id": self.id,
             "name": self.name,
+            # "type": self.type,
             "users": [user.to_json() for user in self.users]
         }
     

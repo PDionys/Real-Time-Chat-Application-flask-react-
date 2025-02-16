@@ -1,7 +1,7 @@
 from config import app
 from flask import request, jsonify
 from models import UserModel
-from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, jwt_required
 
 
 @app.route('/signup', methods=['POST'])
@@ -40,3 +40,11 @@ def signin_user():
         }), 200
     
     return jsonify({"message":"Invalide username or password"}), 400
+
+@app.route('/jwt_refresh', methods=["POST"])
+@jwt_required(refresh=True)
+def jwt_refresh():
+    current_user = get_jwt_identity()
+    access_token = create_access_token(identity=current_user)
+
+    return jsonify({"access":access_token}), 200
