@@ -1,6 +1,7 @@
 import '../css/Chat.css'
 import accountIcon from '../svg/account-avatar-profile-user-11-svgrepo-com.svg'
 import publickChatIcon from '../svg/chat-talk-svgrepo-com-public.svg'
+import closeChatIcon from '../svg/back-svgrepo-com.svg'
 import { useNavigate} from 'react-router-dom'
 import { useEffect, useState } from 'react'
 
@@ -9,6 +10,7 @@ export default function Chat(){
     const currentUser = localStorage.getItem('username')
     const [rooms, setRooms] = useState([])
     const [users, setUsers] = useState([])
+    const [selectedRoom, setSelectedRoom] = useState(null)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -144,6 +146,13 @@ export default function Chat(){
         }
     }
 
+    const handleRoomSelect = (room) => {
+        if (selectedRoom !== room){
+            setSelectedRoom(room)
+            console.log(room)
+        }
+    }
+
     return (
         <div className="web-cahat">
             <div className="chats-list">
@@ -181,7 +190,7 @@ export default function Chat(){
                     ))}
                     {rooms.length !== 0 && <h2>Rooms</h2>}
                     {rooms.map((room) => (
-                        <div className='room' key={room}>
+                        <div className={`room${selectedRoom === room ? '-selected' : ''}`} key={room} onClick={() => handleRoomSelect(room)}>
                             <img className='account-img' src={publickChatIcon}></img>
                             <div className='room-info'>
                                 <h3>{room}</h3>
@@ -191,7 +200,23 @@ export default function Chat(){
                     ))}
                 </div>
             </div>
-            <div className='chat-window'></div>
+            <div className='chat-window'>
+                {selectedRoom !== null &&
+                    <>
+                        <div className='chat-window-header'>
+                            <img className='close-chat' src={closeChatIcon} onClick={() => setSelectedRoom(null)}></img>
+                            <img className='chat-avatar' src={publickChatIcon}></img>
+                            <h2>{selectedRoom}</h2>
+                        </div>
+                        <div className='chat-window-body'>
+                        </div>
+                        <div className='chat-window-footer'>
+                            <input type='text' placeholder='Message'></input>
+                            <button>Send</button>
+                        </div>
+                    </>  
+                }
+            </div>
         </div>
     )
 }

@@ -76,6 +76,16 @@
     /* background-color: greenyellow; */
 }
 
+.room-selected{
+    display: flex;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+
+    background-color: lightgreen;
+}
+
 .room:hover{
     background-color: #f9f9f9;
 }
@@ -97,4 +107,63 @@
     /* flex-direction: column; */
     background-color: #fff;
     margin-left: 10px;
+}
+
+.chat-window-header{
+    display: flex;
+    /* padding: 10px; */
+    border-bottom: 2px solid #ddd;
+}
+
+.chat-window-header img{
+    width: 50px;
+    height: 50px;
+    /* border-radius: 50%; */
+
+    margin-top: 10px;
+    margin-left: 15px;
+}
+
+.chat-window-header h2{
+    margin-top: 20px;
+    margin-left: 25px;
+}
+
+.chat-window-body{
+    overflow-y: auto;
+    height: calc(100vh - 200px);
+    padding: 10px;
+
+    /* background-color: aqua; */
+}
+
+.chat-window-footer{
+    display: flex;
+    padding: 10px;
+    border-top: 2px solid #ddd;
+}
+
+.chat-window-footer input{
+    width: 93%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.chat-window-footer button{
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.chat-window-footer button:hover{
+    background-color: #f0f0f0;
+}
+
+.chat-window-footer button:active{
+    background-color: #e0e0e0;
 }
