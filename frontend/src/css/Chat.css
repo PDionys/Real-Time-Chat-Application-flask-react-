@@ -62,6 +62,10 @@
     height: calc(100vh - 200px);
 }
 
+.rooms-list h2{
+    border-bottom: 2px solid #ddd;
+}
+
 .room{
     display: flex;
     margin-top: 10px;

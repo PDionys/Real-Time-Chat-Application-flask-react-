@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 export default function Chat(){
     const currentUser = localStorage.getItem('username')
     const [rooms, setRooms] = useState([])
+    const [users, setUsers] = useState([])
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -78,10 +79,36 @@ export default function Chat(){
     }
 
     const handleSearch = async (e) => {
-        const search = e.target.value
-        // setSearch(e.target.value)
+        const search_item = e.target.value
 
-        console.log(`Searching for: ${search}`)
+        if (search_item !== ''){
+            setRooms([])
+            setUsers([])
+
+            const options = {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem('access')}`
+                }
+            }
+            const response = await fetch(
+                `http://127.0.0.1:5000/chat/find_chats?item=${search_item}&user=${localStorage.getItem('username')}`, 
+                options)
+
+            if (response.status === 200){
+                const data = await response.json()
+                setUsers(data.users)
+                setRooms(data.rooms)
+            }else{
+                refreshToken(response)
+            }
+        }else{
+            setUsers([])
+            getRooms()
+        }
+
+        console.log(`Searching for: ${search_item}`)
     }
 
     const handleLogOut = () => {
@@ -90,8 +117,6 @@ export default function Chat(){
         localStorage.removeItem('refresh')
 
         setRooms([])
-
-        // navigate('/')
     }
 
     const refreshToken = async (response) => {
@@ -144,6 +169,17 @@ export default function Chat(){
                     </div>
                 </div>
                 <div className='rooms-list'>
+                    {users.length !== 0 && <h2>Users</h2>}
+                    {users.map((user) => (
+                        <div className='room' key={user}>
+                            <img className='account-img' src={accountIcon}></img>
+                            <div className='room-info'>
+                                <h3>{user}</h3>
+                                <p>Status?</p>
+                            </div>
+                        </div>
+                    ))}
+                    {rooms.length !== 0 && <h2>Rooms</h2>}
                     {rooms.map((room) => (
                         <div className='room' key={room}>
                             <img className='account-img' src={publickChatIcon}></img>

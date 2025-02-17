@@ -37,3 +37,23 @@ def get_rooms():
         rooms_name.append(room.chat.name)
 
     return jsonify({"rooms": rooms_name}), 200
+
+@app.route('/chat/find_chats', methods=['GET'])
+@jwt_required()
+def find_chats():
+    search_item = request.args.get('item')
+    username = request.args.get('user')
+
+    user = UserModel.get_user_by_username(username)
+    user_chat = UserChatModel.query.filter_by(user_id=user.id).all()
+
+    users = UserModel.query.filter(UserModel.username.like(f'%{search_item}%'), UserModel.id != user.id).all()
+    rooms = ChatModel.query.filter(
+        ChatModel.name.like(f'%{search_item}%'), 
+        ChatModel.id.notin_([chat.chat_id for chat in user_chat])
+        ).all()
+
+    json_users = list(map(lambda x: x.username, users))
+    json_rooms = list(map(lambda x: x.name, rooms))
+
+    return jsonify({"users": json_users, "rooms": json_rooms}), 200
