@@ -149,7 +149,7 @@ export default function Chat(){
         }
     }
 
-    const joinRoom = async (room) => {
+    const handelJoinRoom = async (room) => {
         const username = currentUser
 
         const data = {
@@ -222,7 +222,7 @@ export default function Chat(){
                     {searching ? 
                     <>
                     {rooms.map((room) => (
-                        <div className={'room'} key={room} onClick={() => joinRoom(room)}>
+                        <div className={'room'} key={room} onClick={() => handelJoinRoom(room)}>
                             <img className='account-img' src={publickChatIcon}></img>
                             <div className='room-info'>
                                 <h3>{room}</h3>
@@ -234,7 +234,11 @@ export default function Chat(){
                     :
                     <>
                     {rooms.map((room) => (
-                        <div className={`room${selectedRoom === room ? '-selected' : ''}`} key={room} onClick={() => handleRoomSelect(room)}>
+                        <div 
+                        className={`room${selectedRoom === room ? '-selected' : ''}`} 
+                        key={room} 
+                        onClick={() => handleRoomSelect(room)}
+                        >
                             <img className='account-img' src={publickChatIcon}></img>
                             <div className='room-info'>
                                 <h3>{room}</h3>
