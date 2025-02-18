@@ -1,7 +1,8 @@
-from flask import request, jsonify
-from config import app
+from flask import request, jsonify, session
+from config import app, socketio
 from models import ChatModel, UserModel, UserChatModel
 from flask_jwt_extended import jwt_required
+from flask_socketio import join_room, leave_room, send
 
 @app.route('/chat/create_room', methods=['POST'])
 @jwt_required()
@@ -71,3 +72,24 @@ def add_user_to_chat():
     user_chat.save()
 
     return jsonify({"msg": "User added to chat!"}), 201
+
+@socketio.on('join')
+def on_join(data):
+    username = data['username']
+    room = data['room']
+    join_room(room)
+    session['room'] = room
+    session['username'] = username
+    send(username + ' has entered the room.', room=room)
+
+@socketio.on('leave')
+def on_leave(data):
+    username = data['username']
+    room = data['room']
+    leave_room(room)
+    send(username + ' has left the room.', room=room)
+
+@socketio.on('message')
+def handle_message(data):
+    room = data['room']
+    send(f'{data["username"]}: {data["message"]}', room=room)

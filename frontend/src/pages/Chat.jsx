@@ -4,7 +4,9 @@ import publickChatIcon from '../svg/chat-talk-svgrepo-com-public.svg'
 import closeChatIcon from '../svg/back-svgrepo-com.svg'
 import { data, useNavigate} from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import io from 'socket.io-client'
 
+const socketio = io('http://127.0.0.1:5000')
 
 export default function Chat(){
     const currentUser = localStorage.getItem('username')
@@ -12,11 +14,21 @@ export default function Chat(){
     const [users, setUsers] = useState([])
     const [selectedRoom, setSelectedRoom] = useState(null)
     const [searching, setSearching] = useState(false)
+    const [messages, setMessages] = useState([])
+    const [message, setMessage] = useState('')
     const navigate = useNavigate()
 
     useEffect(() => {
         if (localStorage.getItem('username') !== null){
             getRooms()
+
+            socketio.on('message', (data) => {
+              setMessages((prevMessage) => [...prevMessage, data])  
+            })
+        }
+
+        return () => {
+            socketio.off('message')
         }
     }, [])
 
@@ -180,6 +192,14 @@ export default function Chat(){
         if (selectedRoom !== room){
             setSelectedRoom(room)
             console.log(room)
+            socketio.emit('join', {username: currentUser, room})
+        }
+    }
+
+    const handleSendMessage = () => {
+        if (message !== ''){
+            socketio.emit('message', {username: currentUser, room: selectedRoom, message})
+            setMessage('')
         }
     }
 
@@ -260,10 +280,13 @@ export default function Chat(){
                         </div>
                         <div className='chat-window-body'>
                             {/* TODO all message here */}
+                            {messages.map((msg, index) => (
+                                <p key={index}>{msg}</p>
+                            ))}
                         </div>
                         <div className='chat-window-footer'>
-                            <input type='text' placeholder='Message'></input>
-                            <button>Send</button>
+                            <input type='text' placeholder='Message' onChange={(e) => setMessage(e.target.value)}></input>
+                            <button onClick={handleSendMessage}>Send</button>
                         </div>
                     </>  
                 }
