@@ -13,7 +13,7 @@ def create_room():
     room = ChatModel.get_room_by_name(data.get('room'))
     if room is not None:
         return jsonify({"msg": "Room already exist!"}), 401
-    new_room = ChatModel(name=data.get('room'))
+    new_room = ChatModel(name=data.get('room'), type=data.get('type'))
     new_room.save()
     
     # # Select user by username

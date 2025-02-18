@@ -66,7 +66,7 @@ export default function Chat(){
             // Create room
             const data = {
                 username,
-                // type: 'public',
+                type: 'public',
                 room
             }
 
@@ -192,6 +192,7 @@ export default function Chat(){
         if (selectedRoom !== room){
             setSelectedRoom(room)
             console.log(room)
+            setMessages([])
             socketio.emit('join', {username: currentUser, room})
         }
     }
@@ -200,6 +201,14 @@ export default function Chat(){
         if (message !== ''){
             socketio.emit('message', {username: currentUser, room: selectedRoom, message})
             setMessage('')
+            const inputValue = document.getElementById('message-input')
+            inputValue.value = ''
+        }
+    }
+
+    const executeOnEnter = (e) => {
+        if (e.key === 'Enter'){
+            handleSendMessage()
         }
     }
 
@@ -284,7 +293,13 @@ export default function Chat(){
                             ))}
                         </div>
                         <div className='chat-window-footer'>
-                            <input type='text' placeholder='Message' onChange={(e) => setMessage(e.target.value)}></input>
+                            <input 
+                            type='text' 
+                            placeholder='Message' 
+                            onChange={(e) => setMessage(e.target.value)}
+                            id = 'message-input'
+                            onKeyDown={(e) => executeOnEnter(e)}
+                            />
                             <button onClick={handleSendMessage}>Send</button>
                         </div>
                     </>  
