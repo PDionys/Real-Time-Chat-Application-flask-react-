@@ -1,11 +1,30 @@
 import { useState } from "react"
 
+/**
+ * Signup component for user registration.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <Signup />
+ * )
+ * 
+ * @returns {JSX.Element} The Signup component.
+ */
 
 export default function Sighup(){
     const [username, setUsername] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
 
+    /**
+     * Handles the form submission for the signup process.
+     * 
+     * @param {Event} e - The event object from the form submission.
+     * @returns {Promise<void>} - A promise that resolves when the form submission is complete.
+     * 
+     * @async
+     */
     const onSubmit = async (e) => {
         e.preventDefault()
 

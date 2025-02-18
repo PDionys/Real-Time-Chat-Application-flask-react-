@@ -2,7 +2,7 @@ import '../css/Chat.css'
 import accountIcon from '../svg/account-avatar-profile-user-11-svgrepo-com.svg'
 import publickChatIcon from '../svg/chat-talk-svgrepo-com-public.svg'
 import closeChatIcon from '../svg/back-svgrepo-com.svg'
-import { useNavigate} from 'react-router-dom'
+import { data, useNavigate} from 'react-router-dom'
 import { useEffect, useState } from 'react'
 
 
@@ -11,6 +11,7 @@ export default function Chat(){
     const [rooms, setRooms] = useState([])
     const [users, setUsers] = useState([])
     const [selectedRoom, setSelectedRoom] = useState(null)
+    const [searching, setSearching] = useState(false)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -86,6 +87,7 @@ export default function Chat(){
         if (search_item !== ''){
             setRooms([])
             setUsers([])
+            setSearching(true)
 
             const options = {
                 method: 'GET',
@@ -107,6 +109,7 @@ export default function Chat(){
             }
         }else{
             setUsers([])
+            setSearching(false)
             getRooms()
         }
 
@@ -143,6 +146,33 @@ export default function Chat(){
             }
         }else{
             console.log(await response.json().msg)
+        }
+    }
+
+    const joinRoom = async (room) => {
+        const username = currentUser
+
+        const data = {
+            username,
+            room
+        }
+        const options = {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem('access')}`
+            },
+            body: JSON.stringify(data)
+        }
+        const url = 'http://127.0.0.1:5000/chat/add_user_to_chat'
+
+        const response = await fetch(url, options)
+        if (response.status === 201){
+            const responseData = await response.json()
+            console.log(responseData.msg)
+            setRooms(rooms.filter((r) => r !== room))
+        }else{
+            refreshToken(response)
         }
     }
 
@@ -189,6 +219,20 @@ export default function Chat(){
                         </div>
                     ))}
                     {rooms.length !== 0 && <h2>Rooms</h2>}
+                    {searching ? 
+                    <>
+                    {rooms.map((room) => (
+                        <div className={'room'} key={room} onClick={() => joinRoom(room)}>
+                            <img className='account-img' src={publickChatIcon}></img>
+                            <div className='room-info'>
+                                <h3>{room}</h3>
+                                <p>Last message</p>
+                            </div>
+                        </div>
+                    ))}
+                    </> 
+                    :
+                    <>
                     {rooms.map((room) => (
                         <div className={`room${selectedRoom === room ? '-selected' : ''}`} key={room} onClick={() => handleRoomSelect(room)}>
                             <img className='account-img' src={publickChatIcon}></img>
@@ -198,6 +242,8 @@ export default function Chat(){
                             </div>
                         </div>
                     ))}
+                    </> 
+                    }
                 </div>
             </div>
             <div className='chat-window'>
@@ -209,6 +255,7 @@ export default function Chat(){
                             <h2>{selectedRoom}</h2>
                         </div>
                         <div className='chat-window-body'>
+                            {/* TODO all message here */}
                         </div>
                         <div className='chat-window-footer'>
                             <input type='text' placeholder='Message'></input>

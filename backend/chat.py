@@ -57,3 +57,17 @@ def find_chats():
     json_rooms = list(map(lambda x: x.name, rooms))
 
     return jsonify({"users": json_users, "rooms": json_rooms}), 200
+
+
+@app.route('/chat/add_user_to_chat', methods=['POST'])
+@jwt_required()
+def add_user_to_chat():
+    data = request.get_json()
+
+    user = UserModel.get_user_by_username(data.get('username'))
+    chat = ChatModel.get_room_by_name(data.get('room'))
+
+    user_chat = UserChatModel(user_id=user.id, chat_id=chat.id)
+    user_chat.save()
+
+    return jsonify({"msg": "User added to chat!"}), 201

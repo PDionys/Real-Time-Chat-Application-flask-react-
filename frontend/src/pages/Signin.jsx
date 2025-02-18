@@ -1,6 +1,20 @@
 import {useNavigate} from 'react-router-dom'
 import { useState } from 'react'
 
+/**
+ * Signin component handles the user sign-in process.
+ * 
+ * This component maintains the state for username and password, and handles form submission.
+ * On form submission, it sends a POST request to the backend server with the username and password.
+ * If the response is successful, it stores the username and tokens in localStorage and navigates to the home page.
+ * If the response is unsuccessful, it alerts the user with the error message.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <Signin />
+ * )
+ */
 
 export default function Signin(){
     const [username, setUsername] = useState("")
@@ -8,6 +22,21 @@ export default function Signin(){
 
     const navigate = useNavigate()
 
+    /**
+     * Handles the form submission for signing in a user.
+     * 
+     * @param {Event} e - The event object from the form submission.
+     * @returns {Promise<void>} - A promise that resolves when the form submission is complete.
+     * 
+     * @async
+     * @function onSubmit
+     * 
+     * @description
+     * This function prevents the default form submission behavior, constructs the user data
+     * from the form inputs, and sends a POST request to the server to sign in the user. If the
+     * response status is not 200, it alerts the user with the error message. Otherwise, it stores
+     * the username and tokens in localStorage and navigates to the home page.
+     */
     const onSubmit = async (e) => {
         e.preventDefault()
 
