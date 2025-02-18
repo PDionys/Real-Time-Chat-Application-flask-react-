@@ -2,7 +2,7 @@ import '../css/Chat.css'
 import accountIcon from '../svg/account-avatar-profile-user-11-svgrepo-com.svg'
 import publickChatIcon from '../svg/chat-talk-svgrepo-com-public.svg'
 import closeChatIcon from '../svg/back-svgrepo-com.svg'
-import { data, useNavigate} from 'react-router-dom'
+import { useNavigate} from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import io from 'socket.io-client'
 
@@ -279,7 +279,6 @@ export default function Chat(){
                             <h2>{selectedRoom}</h2>
                         </div>
                         <div className='chat-window-body'>
-                            {/* TODO all message here */}
                             {messages.map((msg, index) => (
                                 <p key={index}>{msg}</p>
                             ))}
