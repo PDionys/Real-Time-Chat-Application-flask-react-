@@ -3,6 +3,7 @@ from config import app, socketio
 from models import ChatModel, UserModel, UserChatModel
 from flask_jwt_extended import jwt_required
 from flask_socketio import join_room, leave_room, send
+import datetime, json
 
 @app.route('/chat/create_room', methods=['POST'])
 @jwt_required()
@@ -80,16 +81,31 @@ def on_join(data):
     join_room(room)
     session['room'] = room
     session['username'] = username
-    send(username + ' has entered the room.', room=room)
+    send({
+        "username": f'{username}:',
+        "text": 'has entered the room.',
+        "dateTime":  f'{datetime.datetime.now().strftime("%b %d, %Y %I:%M %p")}'
+    }, room=room)
 
 @socketio.on('leave')
 def on_leave(data):
     username = data['username']
     room = data['room']
     leave_room(room)
-    send(username + ' has left the room.', room=room)
+
+    send({
+        "username": f'{username}:',
+        "text": 'has left the room.',
+        "dateTime":  f'{datetime.datetime.now().strftime("%b %d, %Y %I:%M %p")}'
+    }, room=room)
 
 @socketio.on('message')
 def handle_message(data):
     room = data['room']
-    send(f'{data["username"]}: {data["message"]}', room=room)
+    output = {
+        "username": f'{data["username"]}:',
+        "text": f'{data["message"]}',
+        "dateTime": f'{datetime.datetime.now().strftime("%b %d, %Y %I:%M %p")}'
+    }
+
+    send(output, room=room)

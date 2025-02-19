@@ -59,6 +59,7 @@ class ChatModel(db.Model, MyModels):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False, unique=True, index=True)
     type = db.Column(db.String, nullable=False, unique=False)
+    # last_message_id = db.Column(db.Integer, db.ForeignKey('message_model.id'))
     users = db.relationship('UserChatModel', backref='chat', cascade='all, delete-orphan')
     message = db.relationship('MessageModel', backref='chat', cascade='all, delete-orphan')
 
@@ -79,6 +80,7 @@ class MessageModel(db.Model, MyModels):
     user_id = db.Column(db.Integer, db.ForeignKey('user_model.id'))
     chat_id = db.Column(db.Integer, db.ForeignKey('chat_model.id'))
     created_at = db.Column(db.DateTime, nullable=False, unique=False)
+    # chat = db.relationship('ChatModel', backref='message', uselist=False)
 
     def to_json(self):
         return {

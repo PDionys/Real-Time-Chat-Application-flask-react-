@@ -23,7 +23,13 @@ export default function Chat(){
             getRooms()
 
             socketio.on('message', (data) => {
-              setMessages((prevMessage) => [...prevMessage, data])  
+                setMessages((prevMessage) => [...prevMessage,
+                    {
+                        username: data.username,
+                        text: data.text,
+                        dateTime: data.dateTime
+                    }
+                ])  
             })
         }
 
@@ -289,7 +295,11 @@ export default function Chat(){
                         </div>
                         <div className='chat-window-body'>
                             {messages.map((msg, index) => (
-                                <p key={index}>{msg}</p>
+                                <div className='message-text' key={index}>
+                                    <h4 key={msg.username}>{msg.username}</h4>
+                                    <p key={msg.text}>{msg.text}</p>
+                                    <p className='date-time' key={msg.dateTime}>{msg.dateTime}</p>
+                                </div>
                             ))}
                         </div>
                         <div className='chat-window-footer'>
@@ -299,6 +309,7 @@ export default function Chat(){
                             onChange={(e) => setMessage(e.target.value)}
                             id = 'message-input'
                             onKeyDown={(e) => executeOnEnter(e)}
+                            maxLength={192}
                             />
                             <button onClick={handleSendMessage}>Send</button>
                         </div>

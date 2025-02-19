@@ -137,6 +137,23 @@
     /* background-color: aqua; */
 }
 
+.message-text{
+    display: flex;
+    align-items: center; 
+}
+
+.message-text *{
+    margin-left: 5px;
+    max-width: 100vh;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.date-time{
+    color: gray;
+    margin-left: auto;
+}
+
 .chat-window-footer{
     display: flex;
     padding: 10px;
