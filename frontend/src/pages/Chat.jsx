@@ -196,6 +196,10 @@ export default function Chat(){
 
     const handleRoomSelect = (room) => {
         if (selectedRoom !== room){
+            if (selectedRoom !== null){
+                socketio.emit('leave', {username: currentUser, room: selectedRoom})
+            }
+            // socketio.emit('leave', {username: currentUser, room})
             setSelectedRoom(room)
             console.log(room)
             setMessages([])

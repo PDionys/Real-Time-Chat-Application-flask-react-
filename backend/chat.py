@@ -3,7 +3,7 @@ from config import app, socketio
 from models import ChatModel, UserModel, UserChatModel
 from flask_jwt_extended import jwt_required
 from flask_socketio import join_room, leave_room, send
-import datetime, json
+import datetime
 
 @app.route('/chat/create_room', methods=['POST'])
 @jwt_required()
@@ -85,7 +85,7 @@ def on_join(data):
         "username": f'{username}:',
         "text": 'has entered the room.',
         "dateTime":  f'{datetime.datetime.now().strftime("%b %d, %Y %I:%M %p")}'
-    }, room=room)
+    }, to=room)
 
 @socketio.on('leave')
 def on_leave(data):
@@ -97,7 +97,7 @@ def on_leave(data):
         "username": f'{username}:',
         "text": 'has left the room.',
         "dateTime":  f'{datetime.datetime.now().strftime("%b %d, %Y %I:%M %p")}'
-    }, room=room)
+    }, to=room)
 
 @socketio.on('message')
 def handle_message(data):
@@ -108,4 +108,4 @@ def handle_message(data):
         "dateTime": f'{datetime.datetime.now().strftime("%b %d, %Y %I:%M %p")}'
     }
 
-    send(output, room=room)
+    send(output, to=room)
