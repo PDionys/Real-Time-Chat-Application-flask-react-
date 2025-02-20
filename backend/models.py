@@ -9,7 +9,7 @@ class MyModels():
         db.session.commit()
     
     def delete(self):
-        db.session.delete()
+        db.session.delete(self)
         db.session.commit()
 
 class UserModel(db.Model, MyModels):

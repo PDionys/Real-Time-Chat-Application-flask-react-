@@ -2,6 +2,7 @@ import '../css/Chat.css'
 import accountIcon from '../svg/account-avatar-profile-user-11-svgrepo-com.svg'
 import publickChatIcon from '../svg/chat-talk-svgrepo-com-public.svg'
 import closeChatIcon from '../svg/back-svgrepo-com.svg'
+import exitChatIcon from '../svg/leave-svgrepo-com.svg'
 import { useNavigate} from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import io from 'socket.io-client'
@@ -197,9 +198,8 @@ export default function Chat(){
     const handleRoomSelect = (room) => {
         if (selectedRoom !== room){
             if (selectedRoom !== null){
-                socketio.emit('leave', {username: currentUser, room: selectedRoom})
+                socketio.emit('leave')
             }
-            // socketio.emit('leave', {username: currentUser, room})
             setSelectedRoom(room)
             console.log(room)
             setMessages([])
@@ -207,9 +207,18 @@ export default function Chat(){
         }
     }
 
+    const handleExitChat = () => {
+        const data = {
+            
+        }
+
+        setSelectedRoom(null)
+        socketio.emit('exit')
+    }
+
     const handleSendMessage = () => {
         if (message !== ''){
-            socketio.emit('message', {username: currentUser, room: selectedRoom, message})
+            socketio.emit('message', {message})
             setMessage('')
             const inputValue = document.getElementById('message-input')
             inputValue.value = ''
@@ -293,9 +302,13 @@ export default function Chat(){
                 {selectedRoom !== null &&
                     <>
                         <div className='chat-window-header'>
-                            <img className='close-chat' src={closeChatIcon} onClick={() => setSelectedRoom(null)}></img>
-                            <img className='chat-avatar' src={publickChatIcon}></img>
+                            <img className='close-chat' src={closeChatIcon} onClick={() => {
+                                setSelectedRoom(null)
+                                socketio.emit('leave')
+                                }} />
+                            <img className='chat-avatar' src={publickChatIcon} />
                             <h2>{selectedRoom}</h2>
+                            <img className='exit-chat' src={exitChatIcon} onClick={handleExitChat}/>
                         </div>
                         <div className='chat-window-body'>
                             {messages.map((msg, index) => (
