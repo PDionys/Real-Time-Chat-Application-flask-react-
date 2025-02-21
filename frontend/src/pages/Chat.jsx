@@ -51,10 +51,11 @@ export default function Chat(){
                 "Authorization": `Bearer ${localStorage.getItem('access')}`
             }
         }
+
         const response = await fetch(`http://127.0.0.1:5000/chat/get_rooms?user=${localStorage.getItem('username')}`, options)
-        const data = await response.json()
-        
         if (response.status === 200){
+            const data = await response.json()
+            // console.log(data.rooms)
             setRooms(data.rooms)
         }else{
             refreshToken(response)
@@ -98,6 +99,38 @@ export default function Chat(){
             console.log('Room creation failed')
         }
 
+    }
+
+    const handleSaveMessagesToDB = async (username, text, ev, room = null) => {
+        const roomElement = document.querySelector('.room-selected .room-info h3');
+        // const elementContent = roomElement ? roomElement.textContent : '';
+        // const roomName = roomElement ? roomElement.textContent : room;
+        const roomName = room === null ? roomElement.textContent : room;
+        const data = {
+            username,
+            room: roomName,
+            text
+        }
+
+        const url = 'http://127.0.0.1:5000/chat/save_message'
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem('access')}`
+            },
+            body: JSON.stringify(data)
+        }
+
+        const response = await fetch(url, options)
+        if (response.status === 201){
+            const result = await response.json()
+            ev === 'connect_room' ? socketio.emit(ev, {message: result.message, dateTime: result.dateTime, username, room: roomName}) : 
+                                    socketio.emit(ev, {message: result.message, dateTime: result.dateTime})
+            console.log(result.msg)
+        }else{
+            refreshToken(response)
+        }
     }
 
     const handleSearch = async (e) => {
@@ -168,7 +201,7 @@ export default function Chat(){
         }
     }
 
-    const handelJoinRoom = async (room) => {
+    const onJoinRoom = async (room) => {
         const username = currentUser
 
         const data = {
@@ -190,6 +223,38 @@ export default function Chat(){
             const responseData = await response.json()
             console.log(responseData.msg)
             setRooms(rooms.filter((r) => r !== room))
+            // socketio.emit('connect_room', {username: currentUser, room})
+        }else{
+            refreshToken(response)
+        }
+    }
+
+    const handelJoinRoom = (room) => {
+        onJoinRoom(room)
+        // console.log(room)
+        handleSaveMessagesToDB(
+            currentUser,
+            'has entered the room.',
+            'connect_room',
+            room
+        )
+    }
+
+    const hendleSetMessagesHistory = async (room) => {
+        const roomSplit = room.split('#')
+        const url = `http://127.0.0.1:5000/chat/get_messages?room=${roomSplit[0]}%23${roomSplit[1]}`
+        const options = {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem('access')}`
+            }
+        }
+
+        const response = await fetch(url, options)
+        if (response.status === 200){
+            const responseData = await response.json()
+            setMessages(responseData.messages)
         }else{
             refreshToken(response)
         }
@@ -202,12 +267,13 @@ export default function Chat(){
             }
             setSelectedRoom(room)
             console.log(room)
-            setMessages([])
+            hendleSetMessagesHistory(room)
+            // setMessages([])
             socketio.emit('join', {username: currentUser, room})
         }
     }
 
-    const handleExitChat = async (room) => {
+    const onExitRoom = async (room) => {
         const data = {
             username: currentUser,
             room
@@ -226,17 +292,32 @@ export default function Chat(){
         if (response.status === 200){
             const result = await response.json()
             console.log(result.msg)
-            setSelectedRoom(null)
-            socketio.emit('exit')
-            getRooms()
         }else{
             refreshToken(response)
         }
     }
 
+    const handleExitChat = async (room) => {
+        await onExitRoom(room)
+        await handleSaveMessagesToDB(
+            currentUser,
+            'has left the room.',
+            'exit'
+        )
+        setSelectedRoom(null)
+        // window.location.reload() //TODO BAG DONT DELETE FROM SCREEN
+        await getRooms()
+    }
+
     const handleSendMessage = () => {
         if (message !== ''){
-            socketio.emit('message', {message})
+            //save message to db
+            handleSaveMessagesToDB(
+                currentUser,
+                message,
+                'message'
+            )
+
             setMessage('')
             const inputValue = document.getElementById('message-input')
             inputValue.value = ''
@@ -331,7 +412,7 @@ export default function Chat(){
                         <div className='chat-window-body'>
                             {messages.map((msg, index) => (
                                 <div className='message-text' key={index}>
-                                    <h4 key={msg.username}>{msg.username}</h4>
+                                    <h4 key={msg.username}>{`${msg.username}:`}</h4>
                                     <p key={msg.text}>{msg.text}</p>
                                     <p className='date-time' key={msg.dateTime}>{msg.dateTime}</p>
                                 </div>

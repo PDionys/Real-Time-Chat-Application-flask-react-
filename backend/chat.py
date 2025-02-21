@@ -1,6 +1,6 @@
 from flask import request, jsonify, session
 from config import app, socketio, db
-from models import ChatModel, UserModel, UserChatModel
+from models import ChatModel, UserModel, UserChatModel, MessageModel
 from flask_jwt_extended import jwt_required
 from flask_socketio import join_room, leave_room, send
 import datetime
@@ -81,8 +81,6 @@ def remove_user_from_chat():
 
     user = UserModel.get_user_by_username(data.get('username'))
     chat = ChatModel.get_room_by_name(data.get('room'))
-    # if user is None or chat is None:
-    #     return jsonify({"msg": "User or room not found!"}), 404
     user_chat = UserChatModel.query.filter_by(user_id=user.id, chat_id=chat.id).first()
 
     try:
@@ -92,19 +90,46 @@ def remove_user_from_chat():
     except:
         db.session.rollback()
         return jsonify({"msg": "Failed to remove user from chat!"}), 500
-    
-    
+
+@app.route('/chat/save_message', methods=['POST'])
+@jwt_required()
+def save_message():
+    data = request.get_json()
+
+    user = UserModel.get_user_by_username(data.get('username'))
+    chat = ChatModel.get_room_by_name(data.get('room'))
+    message = data.get('text')
+    date = datetime.datetime.now().strftime("%b %d, %Y %I:%M %p")
+
+    new_message = MessageModel(message=message, user_id=user.id, chat_id=chat.id, created_at=date)
+    new_message.save()
+
+    # Placeholder for save_message functionality
+    return jsonify({
+        'message': message,
+        'dateTime': date
+    }), 201
+
+@app.route('/chat/get_messages')
+@jwt_required()
+def get_messages():
+    room = request.args.get('room')
+
+    chat = ChatModel.get_room_by_name(room)
+    messages = chat.message
+
+    messages_json = list(map(lambda x: {"username": x.user.username, 
+                                        "text": x.message, 
+                                        'dateTime': x.created_at}
+                                        , messages))
+
+    return jsonify({'messages': messages_json}), 200
 
 @socketio.on('join')
 def on_join(data):
     session['username'] = data['username']
     session['room'] = data['room']
     join_room(session['room'])
-    send({
-        "username": f'{session['username']}:',
-        "text": 'has entered the room.',
-        "dateTime":  f'{datetime.datetime.now().strftime("%b %d, %Y %I:%M %p")}'
-    }, to=session['room'])
 
 @socketio.on('leave')
 def on_leave():
@@ -114,28 +139,34 @@ def on_leave():
 @socketio.on('message')
 def handle_message(data):
     output = {
-        "username": f'{session['username']}:',
+        "username": f'{session['username']}',
         "text": f'{data["message"]}',
-        "dateTime": f'{datetime.datetime.now().strftime("%b %d, %Y %I:%M %p")}'
+        "dateTime": f'{data["dateTime"]}'
     }
 
     send(output, to=session['room'])
 
 @socketio.on('exit')
-def on_exit():
-    # user = UserModel.get_user_by_username(session['username'])
-    # room = ChatModel.get_room_by_name(session['room'])
-    # user_chat = UserChatModel.query.filter_by(user_id=user.id, room_id=room.id).first()
-
-    # db.session.delete(user_chat)
-    # db.session.commit()
-
+def on_exit(data):
     leave_room(session['room'])
 
     send({
-        "username": f'{session['username']}:',
-        "text": 'has left the room.',
-        "dateTime":  f'{datetime.datetime.now().strftime("%b %d, %Y %I:%M %p")}'
+        "username": f'{session['username']}',
+        "text": data['message'],
+        "dateTime":  f'{data["dateTime"]}'
     }, to=session['room'])
 
     session.clear()
+
+@socketio.on('connect_room')
+def on_connect(data):
+    username = data['username']
+    room = data['room']
+
+    join_room(room)
+    send({
+        "username": username,
+        "text": data['message'],
+        "dateTime":  f'{data["dateTime"]}'
+    }, to=room)
+    leave_room(room)

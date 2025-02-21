@@ -79,7 +79,7 @@ class MessageModel(db.Model, MyModels):
     message = db.Column(db.String, nullable=False, unique=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user_model.id'))
     chat_id = db.Column(db.Integer, db.ForeignKey('chat_model.id'))
-    created_at = db.Column(db.DateTime, nullable=False, unique=False)
+    created_at = db.Column(db.String, nullable=False, unique=False)
     # chat = db.relationship('ChatModel', backref='message', uselist=False)
 
     def to_json(self):
