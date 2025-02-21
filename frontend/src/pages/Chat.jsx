@@ -207,13 +207,31 @@ export default function Chat(){
         }
     }
 
-    const handleExitChat = () => {
+    const handleExitChat = async (room) => {
         const data = {
-            
+            username: currentUser,
+            room
+        }
+        const url = 'http://127.0.0.1:5000/chat/remove_user_from_chat'
+        const options = {
+            method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem('access')}`
+                },
+                body: JSON.stringify(data)
         }
 
-        setSelectedRoom(null)
-        socketio.emit('exit')
+        const response = await fetch(url, options)
+        if (response.status === 200){
+            const result = await response.json()
+            console.log(result.msg)
+            setSelectedRoom(null)
+            socketio.emit('exit')
+            getRooms()
+        }else{
+            refreshToken(response)
+        }
     }
 
     const handleSendMessage = () => {
@@ -308,7 +326,7 @@ export default function Chat(){
                                 }} />
                             <img className='chat-avatar' src={publickChatIcon} />
                             <h2>{selectedRoom}</h2>
-                            <img className='exit-chat' src={exitChatIcon} onClick={handleExitChat}/>
+                            <img className='exit-chat' src={exitChatIcon} onClick={() => handleExitChat(selectedRoom)}/>
                         </div>
                         <div className='chat-window-body'>
                             {messages.map((msg, index) => (
