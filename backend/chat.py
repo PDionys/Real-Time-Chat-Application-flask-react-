@@ -55,7 +55,7 @@ def find_chats():
         ChatModel.id.notin_([chat.chat_id for chat in user_chat])
         ).all()
 
-    json_users = list(map(lambda x: x.username, users))
+    json_users = list(map(lambda x: {'username':x.username, "status":x.status}, users))
     json_rooms = list(map(lambda x: x.name, rooms))
 
     return jsonify({"users": json_users, "rooms": json_rooms}), 200
