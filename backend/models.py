@@ -17,6 +17,7 @@ class UserModel(db.Model, MyModels):
     username = db.Column(db.String, nullable=False, unique=True, index=True)
     email = db.Column(db.String, nullable=False, unique=True, index=True)
     password = db.Column(db.String, nullable=False, unique=False)
+    status = db.Column(db.String, nullable=False, default='offline')
     chat = db.relationship('UserChatModel', backref='user', cascade='all, delete-orphan')
     message = db.relationship('MessageModel', backref='user', cascade='all, delete-orphan')
 

@@ -1,4 +1,4 @@
-from config import app
+from config import app, db
 from flask import request, jsonify
 from models import UserModel
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, jwt_required
@@ -42,7 +42,7 @@ def signup_user():
 
     return jsonify({"message": "User created!"}), 201
 
-@app.route('/signin', methods=["POST"])
+@app.route('/signin', methods=["PATCH"])
 def signin_user():
     """
     Authenticates a user and generates access and refresh tokens.
@@ -59,6 +59,9 @@ def signin_user():
     if user and (user.check_password(data.get('password'))):
         access_token = create_access_token(identity=user.username)
         refresh_token = create_refresh_token(identity=user.username)
+
+        user.status = 'online'
+        db.session.commit()
 
         return jsonify({
             "message":"Logged In!",
@@ -84,3 +87,13 @@ def jwt_refresh():
     access_token = create_access_token(identity=current_user)
 
     return jsonify({"access":access_token}), 200
+
+@app.route('/logout', methods=['PATCH'])
+def user_logout():
+    data = request.get_json()
+
+    user = UserModel.get_user_by_username(data.get('username'))
+    user.status = 'offline'
+    db.session.commit()
+
+    return jsonify({"msg": "Logged out successfully!"}), 200

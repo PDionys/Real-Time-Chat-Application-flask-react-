@@ -3,7 +3,7 @@ import accountIcon from '../svg/account-avatar-profile-user-11-svgrepo-com.svg'
 import publickChatIcon from '../svg/chat-talk-svgrepo-com-public.svg'
 import closeChatIcon from '../svg/back-svgrepo-com.svg'
 import exitChatIcon from '../svg/leave-svgrepo-com.svg'
-import { useNavigate} from 'react-router-dom'
+import { data, useNavigate} from 'react-router-dom'
 import { useEffect, useState, useRef } from 'react'
 import io from 'socket.io-client'
 
@@ -185,12 +185,29 @@ export default function Chat(){
         console.log(`Searching for: ${search_item}`)
     }
 
-    const handleLogOut = () => {
-        localStorage.removeItem('username')
-        localStorage.removeItem('access')
-        localStorage.removeItem('refresh')
+    const handleLogOut = async() => {
+        const data = {
+            username: currentUser
+        }
+        const options = {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        }
+        const url = "http://127.0.0.1:5000/logout"
 
-        setRooms([])
+        const response = await fetch(url, options)
+        if (response.status === 200){
+            localStorage.removeItem('username')
+            localStorage.removeItem('access')
+            localStorage.removeItem('refresh')
+
+            setRooms([])
+        }else{
+            refreshToken(response)
+        } 
     }
 
     const refreshToken = async (response) => {
@@ -376,8 +393,8 @@ export default function Chat(){
                         <div className='room' key={user}>
                             <img className='account-img' src={accountIcon}></img>
                             <div className='room-info'>
-                                <h3>{user}</h3>
-                                <p>Status?</p>
+                                <h3>{user.username}</h3>
+                                <p style={{ color: `${user.status === 'offline' ? 'red' : 'green'}` }}>{user.status}</p>
                             </div>
                         </div>
                     ))}
