@@ -93,7 +93,10 @@ def user_logout():
     data = request.get_json()
 
     user = UserModel.get_user_by_username(data.get('username'))
-    user.status = 'offline'
-    db.session.commit()
 
-    return jsonify({"msg": "Logged out successfully!"}), 200
+    if user:
+        user.status = 'offline'
+        db.session.commit()
+        return jsonify({"msg": "Logged out successfully!"}), 200
+    else:
+        return jsonify({"msg": "User not found!"}), 404 
