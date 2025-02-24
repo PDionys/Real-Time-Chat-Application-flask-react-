@@ -1,0 +1,195 @@
+.web-cahat{
+    display: flex;
+    height: 98vh;
+}
+
+.chats-list {
+    width: 300px;                       
+    border-radius: 15px;   
+    padding: 20px;          
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: white;
+    padding: 20px;
+}
+
+.chats-list-header{
+    width: 100%;
+    /* height: 200px; */
+    /* background-color: greenyellow; */
+    border-bottom: 2px solid #ddd;
+}
+
+.account{
+    /* background-color: greenyellow; */
+    display: flex;
+    height: 60px;
+}
+
+.account h3{
+    margin-left: 5px;
+}
+
+.account-btn{
+    margin-left: auto;
+    margin-top: 20px;
+}
+
+.account-btn button{
+    margin-left: 5px;
+}
+
+.account-img{
+    width: 60px;
+    height: 60px;
+}
+
+.create-room-btn button{
+    width: 100%;
+    margin-top: 10px;
+}
+
+.search-bar input{
+    width: 96%;
+    margin-top: 10px;
+    /* height: 30px; */
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    padding: 5px;  
+}
+
+.rooms-list{
+    overflow-y: auto;
+    height: calc(100vh - 200px);
+}
+
+.rooms-list h2{
+    border-bottom: 2px solid #ddd;
+}
+
+.room{
+    display: flex;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+
+    /* background-color: greenyellow; */
+}
+
+.room-selected{
+    display: flex;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+
+    background-color: lightgreen;
+}
+
+.room:hover{
+    background-color: #f9f9f9;
+}
+
+.room-info{
+    flex-direction: column;
+    margin-left: 10px;
+}
+
+.room-info p{
+    margin-top: -20px;
+}
+
+.chat-window{
+    flex: 1;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* display: flex; */
+    /* flex-direction: column; */
+    background-color: #fff;
+    margin-left: 10px;
+}
+
+.chat-window-header{
+    display: flex;
+    /* padding: 10px; */
+    border-bottom: 2px solid #ddd;
+    align-items: center;
+}
+
+.chat-window-header .close-chat, .chat-window-header .chat-avatar{
+    width: 50px;
+    height: 50px;
+    /* border-radius: 50%; */
+
+    margin-top: 10px;
+    margin-left: 15px;
+}
+
+.exit-chat{
+    width: 30px;
+    height: 30px;
+
+    margin-left: auto;
+    margin-right: 20px;
+}
+
+.chat-window-header h2{
+    margin-top: 20px;
+    margin-left: 25px;
+}
+
+.chat-window-body{
+    overflow-y: auto;
+    height: calc(100vh - 200px);
+    padding: 10px;
+
+    /* background-color: aqua; */
+}
+
+.message-text{
+    display: flex;
+    align-items: center; 
+}
+
+.message-text *{
+    margin-left: 5px;
+    max-width: 100vh;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.date-time{
+    color: gray;
+    margin-left: auto;
+}
+
+.chat-window-footer{
+    display: flex;
+    padding: 10px;
+    border-top: 2px solid #ddd;
+}
+
+.chat-window-footer input{
+    width: 93%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.chat-window-footer button{
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.chat-window-footer button:hover{
+    background-color: #f0f0f0;
+}
+
+.chat-window-footer button:active{
+    background-color: #e0e0e0;
+}
