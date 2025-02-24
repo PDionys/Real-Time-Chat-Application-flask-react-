@@ -9,7 +9,7 @@ class MyModels():
         db.session.commit()
     
     def delete(self):
-        db.session.delete()
+        db.session.delete(self)
         db.session.commit()
 
 class UserModel(db.Model, MyModels):
@@ -17,7 +17,8 @@ class UserModel(db.Model, MyModels):
     username = db.Column(db.String, nullable=False, unique=True, index=True)
     email = db.Column(db.String, nullable=False, unique=True, index=True)
     password = db.Column(db.String, nullable=False, unique=False)
-    chat = db.relationship('UserChatModel', backref='user')
+    chat = db.relationship('UserChatModel', backref='user', cascade='all, delete-orphan')
+    message = db.relationship('MessageModel', backref='user', cascade='all, delete-orphan')
 
 
     def set_password(self, password):
@@ -57,17 +58,35 @@ class UserChatModel(db.Model, MyModels):
 class ChatModel(db.Model, MyModels):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False, unique=True, index=True)
-    # type = db.Column(db.String, nullable=False, unique=False)
-    users = db.relationship('UserChatModel', backref='chat')
+    type = db.Column(db.String, nullable=False, unique=False)
+    # last_message_id = db.Column(db.Integer, db.ForeignKey('message_model.id'))
+    users = db.relationship('UserChatModel', backref='chat', cascade='all, delete-orphan')
+    message = db.relationship('MessageModel', backref='chat', cascade='all, delete-orphan')
 
     def to_json(self):
         return {
             "id": self.id,
             "name": self.name,
-            # "type": self.type,
-            "users": [user.to_json() for user in self.users]
+            "type": self.type,
         }
     
     @classmethod
     def get_room_by_name(cls, name):
         return cls.query.filter_by(name=name).first()
+    
+class MessageModel(db.Model, MyModels):
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String, nullable=False, unique=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_model.id'))
+    chat_id = db.Column(db.Integer, db.ForeignKey('chat_model.id'))
+    created_at = db.Column(db.String, nullable=False, unique=False)
+    # chat = db.relationship('ChatModel', backref='message', uselist=False)
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "message": self.message,
+            "user_id": self.user_id,
+            "chat_id": self.chat_id,
+            "created_at": self.created_at,
+        }
