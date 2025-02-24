@@ -3,7 +3,7 @@ import accountIcon from '../svg/account-avatar-profile-user-11-svgrepo-com.svg'
 import publickChatIcon from '../svg/chat-talk-svgrepo-com-public.svg'
 import closeChatIcon from '../svg/back-svgrepo-com.svg'
 import exitChatIcon from '../svg/leave-svgrepo-com.svg'
-import { data, useNavigate} from 'react-router-dom'
+import { useNavigate} from 'react-router-dom'
 import { useEffect, useState, useRef } from 'react'
 import io from 'socket.io-client'
 
@@ -200,14 +200,18 @@ export default function Chat(){
 
         const response = await fetch(url, options)
         if (response.status === 200){
-            localStorage.removeItem('username')
-            localStorage.removeItem('access')
-            localStorage.removeItem('refresh')
-
-            setRooms([])
+            const msg = await response.json()
+            console.log(msg.msg)
         }else{
-            refreshToken(response)
+            const msg = await response.json()
+            console.log(msg.msg)
         } 
+
+        localStorage.removeItem('username')
+        localStorage.removeItem('access')
+        localStorage.removeItem('refresh')
+
+        setRooms([])
     }
 
     const refreshToken = async (response) => {
