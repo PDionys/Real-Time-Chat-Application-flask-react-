@@ -68,4 +68,4 @@ A real-time chat application built with Flask and React. It allows users to sign
 4. Open your browser and go to http://localhost:3000 to see the app in action.
 
 ## Demonstratio
-https://github.com/user-attachments/assets/44e6f86f-de1e-4837-878a-7316406e358a
+
