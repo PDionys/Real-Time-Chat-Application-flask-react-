@@ -2,7 +2,7 @@ from flask import request, jsonify, session
 from config import app, socketio, db
 from models import ChatModel, UserModel, UserChatModel, MessageModel
 from flask_jwt_extended import jwt_required
-from flask_socketio import join_room, leave_room, send
+from flask_socketio import join_room, leave_room, send, emit
 import datetime
 
 @app.route('/chat/create_room', methods=['POST'])
@@ -104,7 +104,6 @@ def save_message():
     new_message = MessageModel(message=message, user_id=user.id, chat_id=chat.id, created_at=date)
     new_message.save()
 
-    # Placeholder for save_message functionality
     return jsonify({
         'message': message,
         'dateTime': date

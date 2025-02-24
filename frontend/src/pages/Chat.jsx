@@ -4,7 +4,7 @@ import publickChatIcon from '../svg/chat-talk-svgrepo-com-public.svg'
 import closeChatIcon from '../svg/back-svgrepo-com.svg'
 import exitChatIcon from '../svg/leave-svgrepo-com.svg'
 import { useNavigate} from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import io from 'socket.io-client'
 
 const socketio = io('http://127.0.0.1:5000')
@@ -18,6 +18,7 @@ export default function Chat(){
     const [messages, setMessages] = useState([])
     const [message, setMessage] = useState('')
     const navigate = useNavigate()
+    const chatEndRef = useRef(null)
 
     useEffect(() => {
         if (localStorage.getItem('username') !== null){
@@ -30,7 +31,7 @@ export default function Chat(){
                         text: data.text,
                         dateTime: data.dateTime
                     }
-                ])  
+                ])
             })
         }
 
@@ -38,6 +39,22 @@ export default function Chat(){
             socketio.off('message')
         }
     }, [])
+
+
+    useEffect(() => {
+        if (chatEndRef.current ) { 
+            const offset = 61
+            const distanceFromBottom = chatEndRef.current.scrollHeight - chatEndRef.current.scrollTop - chatEndRef.current.clientHeight;
+            const isSlightlyAboveBottom = distanceFromBottom <= offset;
+
+            if(isSlightlyAboveBottom){
+                console.log("BOTTOM")
+                chatEndRef.current.scrollTop = chatEndRef.current.scrollHeight;
+            }else{
+                console.log("NOT BOTTOM")
+            }
+        }
+    }, [messages]);
 
     const handleRedirect = (to) => {
         navigate(to)
@@ -305,14 +322,13 @@ export default function Chat(){
             'exit'
         )
         setSelectedRoom(null)
-        // window.location.reload() //TODO BAG DONT DELETE FROM SCREEN
         await getRooms()
     }
 
-    const handleSendMessage = () => {
+    const handleSendMessage = async() => {
         if (message !== ''){
             //save message to db
-            handleSaveMessagesToDB(
+            await handleSaveMessagesToDB(
                 currentUser,
                 message,
                 'message'
@@ -409,7 +425,7 @@ export default function Chat(){
                             <h2>{selectedRoom}</h2>
                             <img className='exit-chat' src={exitChatIcon} onClick={() => handleExitChat(selectedRoom)}/>
                         </div>
-                        <div className='chat-window-body'>
+                        <div className='chat-window-body'  ref={chatEndRef}>
                             {messages.map((msg, index) => (
                                 <div className='message-text' key={index}>
                                     <h4 key={msg.username}>{`${msg.username}:`}</h4>
