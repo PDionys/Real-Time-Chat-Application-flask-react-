@@ -3,12 +3,63 @@ import accountIcon from '../svg/account-avatar-profile-user-11-svgrepo-com.svg'
 import publickChatIcon from '../svg/chat-talk-svgrepo-com-public.svg'
 import closeChatIcon from '../svg/back-svgrepo-com.svg'
 import exitChatIcon from '../svg/leave-svgrepo-com.svg'
-import { data, useNavigate} from 'react-router-dom'
+import { useNavigate} from 'react-router-dom'
 import { useEffect, useState, useRef } from 'react'
 import io from 'socket.io-client'
 
 const socketio = io('http://127.0.0.1:5000')
 
+/**
+ * Chat component handles the chat functionality of the application.
+ * It manages the state of rooms, users, messages, and the current user.
+ * It also handles various chat-related actions such as creating rooms, 
+ * joining rooms, sending messages, and logging out.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered Chat component.
+ *
+ * @example
+ * return (
+ *   <Chat />
+ * )
+ *
+ * @function
+ * @name Chat
+ *
+ * @description
+ * The Chat component is responsible for:
+ * - Fetching and displaying chat rooms and users.
+ * - Handling user actions such as creating rooms, joining rooms, sending messages, and logging out.
+ * - Managing the state of the chat, including the current user, rooms, users, selected room, messages, and search state.
+ * - Communicating with the backend server to fetch and update chat data.
+ * - Handling socket.io events for real-time chat functionality.
+ *
+ * @property {string} currentUser - The current logged-in user.
+ * @property {Array} rooms - The list of chat rooms.
+ * @property {Array} users - The list of users.
+ * @property {string|null} selectedRoom - The currently selected chat room.
+ * @property {boolean} searching - The state indicating if the user is searching for rooms or users.
+ * @property {Array} messages - The list of messages in the current chat room.
+ * @property {string} message - The current message being typed by the user.
+ * @property {function} navigate - The function to navigate to different routes.
+ * @property {object} chatEndRef - The reference to the chat window element for scrolling.
+ *
+ * @method handleRedirect - Redirects the user to a specified route.
+ * @method getRooms - Fetches the list of chat rooms for the current user.
+ * @method handleCreateRoom - Handles the creation of a new chat room.
+ * @method handleSaveMessagesToDB - Saves messages to the database and emits socket events.
+ * @method handleSearch - Handles the search functionality for rooms and users.
+ * @method handleLogOut - Logs out the current user and clears local storage.
+ * @method refreshToken - Refreshes the JWT token if it has expired.
+ * @method onJoinRoom - Adds the current user to a specified chat room.
+ * @method handelJoinRoom - Joins a specified chat room and saves a message indicating the user has entered the room.
+ * @method hendleSetMessagesHistory - Fetches and sets the message history for a specified chat room.
+ * @method handleRoomSelect - Selects a chat room and fetches its message history.
+ * @method onExitRoom - Removes the current user from a specified chat room.
+ * @method handleExitChat - Exits the current chat room and saves a message indicating the user has left the room.
+ * @method handleSendMessage - Sends a message in the current chat room.
+ * @method executeOnEnter - Sends a message when the Enter key is pressed.
+ */
 export default function Chat(){
     const currentUser = localStorage.getItem('username')
     const [rooms, setRooms] = useState([])
@@ -200,14 +251,18 @@ export default function Chat(){
 
         const response = await fetch(url, options)
         if (response.status === 200){
-            localStorage.removeItem('username')
-            localStorage.removeItem('access')
-            localStorage.removeItem('refresh')
-
-            setRooms([])
+            const msg = await response.json()
+            console.log(msg.msg)
         }else{
-            refreshToken(response)
+            const msg = await response.json()
+            console.log(msg.msg)
         } 
+
+        localStorage.removeItem('username')
+        localStorage.removeItem('access')
+        localStorage.removeItem('refresh')
+
+        setRooms([])
     }
 
     const refreshToken = async (response) => {
