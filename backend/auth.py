@@ -46,11 +46,12 @@ def signup_user():
 def signin_user():
     """
     Authenticates a user and generates access and refresh tokens.
-    This function retrieves JSON data from the request, checks the user's 
-    credentials, and if valid, generates and returns access and refresh tokens.
+    This function retrieves user credentials from the request, verifies the 
+    username and password, and if valid, generates JWT access and refresh tokens. 
+    It also updates the user's status to 'online' in the database.
     Returns:
-        Response: A JSON response containing a success message and tokens if 
-        authentication is successful, or an error message if authentication fails.
+        Response: A JSON response containing a success message and the tokens 
+        if authentication is successful, or an error message if authentication fails.
     """
     data = request.get_json()
 
@@ -90,6 +91,16 @@ def jwt_refresh():
 
 @app.route('/logout', methods=['PATCH'])
 def user_logout():
+    """
+    Logs out a user by setting their status to 'offline'.
+    This function retrieves the user's data from the request, checks if the user exists,
+    updates their status to 'offline', commits the change to the database, and returns
+    a success message. If the user is not found, it returns an error message.
+    Returns:
+        Response: A JSON response with a success message and HTTP status 200 if the user
+        is logged out successfully, or a JSON response with an error message and HTTP status
+        404 if the user is not found.
+    """
     data = request.get_json()
 
     user = UserModel.get_user_by_username(data.get('username'))
