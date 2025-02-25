@@ -1,6 +1,52 @@
 from config import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
+"""
+This module defines the database models for a real-time chat application using Flask and SQLAlchemy.
+Classes:
+    MyModels: A base class providing save and delete methods for database operations.
+    UserModel: Represents a user in the chat application.
+    UserChatModel: Represents the association between users and chats.
+    ChatModel: Represents a chat room.
+    MessageModel: Represents a message in a chat room.
+UserModel:
+    id (int): Primary key.
+    username (str): Unique username of the user.
+    email (str): Unique email of the user.
+    password (str): Hashed password of the user.
+    status (str): Status of the user (default is 'offline').
+    chat (relationship): Relationship to UserChatModel.
+    message (relationship): Relationship to MessageModel.
+    Methods:
+        set_password(password): Hashes and sets the user's password.
+        check_password(password): Checks the hashed password.
+        get_user_by_username(username): Class method to get a user by username.
+        to_json(): Returns a JSON representation of the user.
+UserChatModel:
+    id (int): Primary key.
+    user_id (int): Foreign key to UserModel.
+    chat_id (int): Foreign key to ChatModel.
+    __table_args__: Unique constraint on user_id and chat_id.
+    Methods:
+        to_json(): Returns a JSON representation of the user-chat association.
+ChatModel:
+    id (int): Primary key.
+    name (str): Unique name of the chat room.
+    type (str): Type of the chat room.
+    users (relationship): Relationship to UserChatModel.
+    message (relationship): Relationship to MessageModel.
+    Methods:
+        to_json(): Returns a JSON representation of the chat room.
+        get_room_by_name(name): Class method to get a chat room by name.
+MessageModel:
+    id (int): Primary key.
+    message (str): The message content.
+    user_id (int): Foreign key to UserModel.
+    chat_id (int): Foreign key to ChatModel.
+    created_at (str): Timestamp of when the message was created.
+    Methods:
+        to_json(): Returns a JSON representation of the message.
+"""
 
 class MyModels():
 

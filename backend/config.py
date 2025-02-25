@@ -6,7 +6,6 @@ from flask_socketio import SocketIO
 
 app = Flask(__name__)
 CORS(app)
-# CORS(app, resources={r"/chat/*": {"origins": "http://localhost:5173"}})
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///chat.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

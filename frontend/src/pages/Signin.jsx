@@ -2,14 +2,17 @@ import {useNavigate} from 'react-router-dom'
 import { useState } from 'react'
 
 /**
- * Signin component handles the user sign-in process.
- * 
- * This component maintains the state for username and password, and handles form submission.
- * On form submission, it sends a POST request to the backend server with the username and password.
- * If the response is successful, it stores the username and tokens in localStorage and navigates to the home page.
- * If the response is unsuccessful, it alerts the user with the error message.
- * 
+ * Signin component for user authentication.
+ *
  * @component
+ * @returns {JSX.Element} The rendered Signin component.
+ *
+ * @description
+ * This component renders a sign-in form that allows users to enter their username and password.
+ * Upon form submission, it sends a PATCH request to the server to authenticate the user. If the
+ * authentication is successful, it stores the username and tokens in localStorage and navigates
+ * to the home page. If the authentication fails, it alerts the user with the error message.
+ *
  * @example
  * return (
  *   <Signin />
